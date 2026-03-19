@@ -36,25 +36,25 @@ erDiagram
     }
 
     VEICULO {
-        int id
+        int id PK
         string modelo
-        string placa
+        string placa UNIQUE
         int ano
-        string chassi
+        string chassi UNIQUE
         string cor
-        int categoria_id
-        int status_id
+        int categoria_id FK
+        int status_id FK
         decimal valor_diaria
         int quilometragem
         timestap criado_em
     }
 
     ALUGUEL {
-        int id
-        int motorista_id
-        int veiculo_id
-        int atendente_id
-        int cliente_id
+        int id PK
+        int motorista_id FK
+        int veiculo_id FK
+        int atendente_id FK
+        int cliente_id FK
         date data_inicio
         date data_fim
         date data_pagamento
@@ -67,7 +67,7 @@ erDiagram
 
     MANUTENCAO {
         int id
-        int veiculo_id
+        int veiculo_id FK
         string descricao
         date data_inicio
         date data_fim
@@ -77,7 +77,7 @@ erDiagram
 
     MULTA {
         int id
-        int aluguel_id
+        int aluguel_id FK
         string descricao
         decimal valor
         date data_multa
@@ -96,28 +96,28 @@ erDiagram
     }
 
     ATENDENTE {
-        int id
+        int id PK
         string nome
-        string cpf
-        string email
+        string cpf UNIQUE
+        string email UNIQUE
         string senha
         string nivel_acesso
     }
 
     CLIENTE {
-        int id
+        int id PK
         string nome
-        string cpf
-        string email
+        string cpf UNIQUE
+        string email UNIQUE
     }
 
     MOTORISTA ||--o{ ALUGUEL : realiza
-    VEICULO ||--o{ ALUGUEL : alugado_em
-    ATENDENTES ||--o{ ALUGUEL : registra
-    CLIENTES ||--o{ ALUGUEL : vinculado
+    VEICULO ||--o{ ALUGUEL : utilizado_em
+    ATENDENTE ||--o{ ALUGUEL : registra
+    CLIENTES ||--o{ ALUGUEL : solicita
     
     VEICULO ||--o{ MANUTENCAO : possui
-    ALUGUEL ||--o{ MULTA : pode_ter
+    ALUGUEL ||--o{ MULTA : gerar
 
     CATEGORIA_VEICULO ||--o{ VEICULO : classifica
     STATUS_VEICULO ||--o{ VEICULO : define
