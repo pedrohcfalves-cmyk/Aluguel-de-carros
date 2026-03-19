@@ -22,17 +22,17 @@ Desenvolver um banco de dados relacional para gerenciar as operações de uma lo
 erDiagram
 
     MOTORISTA {
-        int id
+        int id PK
         string nome
-        string cpf
+        string cpf UNIQUE
         date data_nascimento
-        string cnh
+        string cnh UNIQUE
         date validade_cnh
         string telefone
-        string email
+        string email UNIQUE
         string endereco
         string status
-        datetime criado_em
+        timestap criado_em
     }
 
     VEICULO {
@@ -46,7 +46,7 @@ erDiagram
         int status_id
         decimal valor_diaria
         int quilometragem
-        datetime criado_em
+        timestap criado_em
     }
 
     ALUGUEL {
@@ -62,7 +62,7 @@ erDiagram
         decimal valor_total
         string status
         string comprovante_url
-        datetime criado_em
+        timestap criado_em
     }
 
     MANUTENCAO {
