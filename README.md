@@ -57,13 +57,9 @@ erDiagram
         int cliente_id
         date data_inicio
         date data_fim
-        date data_contrato_inicial
-        date data_contrato_final
         date data_pagamento
-        string nome_periodo_contrato
         string forma_pagamento
         decimal valor_total
-        decimal valor_contrato
         string status
         string comprovante_url
         datetime criado_em
@@ -99,7 +95,7 @@ erDiagram
         string nome
     }
 
-    ATENDENTES {
+    ATENDENTE {
         int id
         string nome
         string cpf
@@ -108,7 +104,7 @@ erDiagram
         string nivel_acesso
     }
 
-    CLIENTES {
+    CLIENTE {
         int id
         string nome
         string cpf
