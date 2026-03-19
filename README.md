@@ -1,146 +1,127 @@
--- =========================
--- TABELAS AUXILIARES
--- =========================
+# 🚗 Sistema de Locação de Veículos
 
-CREATE TABLE IF NOT EXISTS categoria_veiculo (
-    id SERIAL PRIMARY KEY,
-    nome VARCHAR(100) NOT NULL,
-    descricao TEXT
-);
+## 📋 Apresentação do Projeto
 
-CREATE TABLE IF NOT EXISTS status_veiculo (
-    id SERIAL PRIMARY KEY,
-    nome VARCHAR(50) NOT NULL
-);
+### Tema
+Sistema de gerenciamento para locadora de veículos, permitindo o controle completo de motoristas, veículos, aluguéis, manutenções e multas.
 
--- =========================
--- PESSOAS
--- =========================
+### Objetivo Geral
+Desenvolver um banco de dados relacional para gerenciar as operações de uma locadora de veículos, incluindo cadastro de motoristas, controle de frota, registro de aluguéis, manutenções e multas, garantindo a integridade e consistência dos dados.
 
-CREATE TABLE IF NOT EXISTS motorista (
-    id SERIAL PRIMARY KEY,
-    nome VARCHAR(150) NOT NULL,
-    cpf VARCHAR(14) UNIQUE NOT NULL,
-    data_nascimento DATE NOT NULL,
-    cnh VARCHAR(20) UNIQUE NOT NULL,
-    validade_cnh DATE NOT NULL,
-    telefone VARCHAR(20),
-    email VARCHAR(150) UNIQUE,
-    endereco TEXT,
-    status VARCHAR(50),
-    criado_em TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-);
+### Público-Alvo
+- Administradores de locadoras de veículos
+- Atendentes e operadores do sistema
+- Gerentes de frota
+- Clientes que alugam veículos
 
-CREATE TABLE IF NOT EXISTS cliente (
-    id SERIAL PRIMARY KEY,
-    nome VARCHAR(150) NOT NULL,
-    cpf VARCHAR(14) UNIQUE NOT NULL,
-    email VARCHAR(150) UNIQUE,
-    telefone VARCHAR(20)
-);
+---
 
-CREATE TABLE IF NOT EXISTS atendente (
-    id SERIAL PRIMARY KEY,
-    nome VARCHAR(150) NOT NULL,
-    cpf VARCHAR(14) UNIQUE NOT NULL,
-    email VARCHAR(150) UNIQUE NOT NULL,
-    senha TEXT NOT NULL,
-    nivel_acesso VARCHAR(50) NOT NULL
-);
+## 📊 Modelo de Dados Relacional
 
--- =========================
--- VEICULO
--- =========================
+```mermaid
+erDiagram
 
-CREATE TABLE IF NOT EXISTS veiculo (
-    id SERIAL PRIMARY KEY,
-    modelo VARCHAR(100) NOT NULL,
-    placa VARCHAR(10) UNIQUE NOT NULL,
-    ano INT NOT NULL,
-    chassi VARCHAR(50) UNIQUE NOT NULL,
-    cor VARCHAR(50),
-    categoria_id INT NOT NULL,
-    status_id INT NOT NULL,
-    valor_diaria DECIMAL(10,2) NOT NULL,
-    quilometragem INT DEFAULT 0,
-    criado_em TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    MOTORISTA {
+        int id
+        string nome
+        string cpf
+        date data_nascimento
+        string cnh
+        date validade_cnh
+        string telefone
+        string email
+        string endereco
+        string status
+        datetime criado_em
+    }
 
-    CONSTRAINT fk_categoria
-        FOREIGN KEY (categoria_id)
-        REFERENCES categoria_veiculo(id),
+    VEICULO {
+        int id
+        string modelo
+        string placa
+        int ano
+        string chassi
+        string cor
+        int categoria_id
+        int status_id
+        decimal valor_diaria
+        int quilometragem
+        datetime criado_em
+    }
 
-    CONSTRAINT fk_status
-        FOREIGN KEY (status_id)
-        REFERENCES status_veiculo(id)
-);
+    ALUGUEL {
+        int id
+        int motorista_id
+        int veiculo_id
+        int atendente_id
+        int cliente_id
+        date data_inicio
+        date data_fim
+        date data_contrato_inicial
+        date data_contrato_final
+        date data_pagamento
+        string nome_periodo_contrato
+        string forma_pagamento
+        decimal valor_total
+        decimal valor_contrato
+        string status
+        string comprovante_url
+        datetime criado_em
+    }
 
--- =========================
--- ALUGUEL
--- =========================
+    MANUTENCAO {
+        int id
+        int veiculo_id
+        string descricao
+        date data_inicio
+        date data_fim
+        decimal custo
+        string tipo
+    }
 
-CREATE TABLE IF NOT EXISTS aluguel (
-    id SERIAL PRIMARY KEY,
-    motorista_id INT NOT NULL,
-    veiculo_id INT NOT NULL,
-    atendente_id INT NOT NULL,
-    cliente_id INT NOT NULL,
-    data_inicio DATE NOT NULL,
-    data_fim DATE NOT NULL,
-    data_pagamento DATE,
-    forma_pagamento VARCHAR(50),
-    valor_total DECIMAL(10,2) NOT NULL,
-    status VARCHAR(50),
-    comprovante_url TEXT,
-    criado_em TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    MULTA {
+        int id
+        int aluguel_id
+        string descricao
+        decimal valor
+        date data_multa
+        string status
+    }
 
-    CONSTRAINT fk_motorista
-        FOREIGN KEY (motorista_id)
-        REFERENCES motorista(id),
+    CATEGORIA_VEICULO {
+        int id
+        string nome
+        string descricao
+    }
 
-    CONSTRAINT fk_veiculo
-        FOREIGN KEY (veiculo_id)
-        REFERENCES veiculo(id),
+    STATUS_VEICULO {
+        int id
+        string nome
+    }
 
-    CONSTRAINT fk_atendente
-        FOREIGN KEY (atendente_id)
-        REFERENCES atendente(id),
+    ATENDENTES {
+        int id
+        string nome
+        string cpf
+        string email
+        string senha
+        string nivel_acesso
+    }
 
-    CONSTRAINT fk_cliente
-        FOREIGN KEY (cliente_id)
-        REFERENCES cliente(id)
-);
+    CLIENTES {
+        int id
+        string nome
+        string cpf
+        string email
+    }
 
--- =========================
--- MANUTENCAO
--- =========================
+    MOTORISTA ||--o{ ALUGUEL : realiza
+    VEICULO ||--o{ ALUGUEL : alugado_em
+    ATENDENTES ||--o{ ALUGUEL : registra
+    CLIENTES ||--o{ ALUGUEL : vinculado
+    
+    VEICULO ||--o{ MANUTENCAO : possui
+    ALUGUEL ||--o{ MULTA : pode_ter
 
-CREATE TABLE IF NOT EXISTS manutencao (
-    id SERIAL PRIMARY KEY,
-    veiculo_id INT NOT NULL,
-    descricao TEXT NOT NULL,
-    data_inicio DATE NOT NULL,
-    data_fim DATE,
-    custo DECIMAL(10,2),
-    tipo VARCHAR(50),
-
-    CONSTRAINT fk_manutencao_veiculo
-        FOREIGN KEY (veiculo_id)
-        REFERENCES veiculo(id)
-);
-
--- =========================
--- MULTA
--- =========================
-
-CREATE TABLE IF NOT EXISTS multa (
-    id SERIAL PRIMARY KEY,
-    aluguel_id INT NOT NULL,
-    descricao TEXT,
-    valor DECIMAL(10,2) NOT NULL,
-    data_multa DATE NOT NULL,
-    status VARCHAR(50),
-
-    CONSTRAINT fk_multa_aluguel
-        FOREIGN KEY (aluguel_id)
-        REFERENCES aluguel(id)
-);
+    CATEGORIA_VEICULO ||--o{ VEICULO : classifica
+    STATUS_VEICULO ||--o{ VEICULO : define
