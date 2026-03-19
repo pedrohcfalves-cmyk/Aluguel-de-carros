@@ -123,6 +123,8 @@ erDiagram
     CATEGORIA_VEICULO ||--o{ VEICULO : classifica
     STATUS_VEICULO ||--o{ VEICULO : define
 
+```
+
 ## 🔒 Regras de Integridade e Estrutura do Banco
 
 O banco de dados foi projetado com foco em **integridade, consistência e boas práticas**, utilizando constraints avançadas do PostgreSQL.
