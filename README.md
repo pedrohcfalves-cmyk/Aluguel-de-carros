@@ -18,7 +18,7 @@ Desenvolver um banco de dados relacional para gerenciar as operações de uma lo
 
 ## 📊 Modelo de Dados Relacional
 
-'''erDiagram
+erDiagram
 
     MOTORISTA {
         int id
